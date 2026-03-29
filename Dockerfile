@@ -12,8 +12,12 @@ RUN apt-get update && \
     apt-get install -y apache2 php libapache2-mod-php php-mysql mariadb-server supervisor && \
     apt-get clean
 
-# add wordpress files to /var/www/html
-ADD https://wordpress.org/latest.tar.gz /var/www/html/
+# download wordpress archive files to /var/www/html
+ADD https://wordpress.org/latest.tar.gz /tmp/latest.tar.gz
+
+#unzip the files
+RUN tar -xzf /tmp/latest.tar.gz -C /tmp && \
+    cp -r /tmp/wordpress/* /var/www/html/
 
 # copy the configuration file for apache2 from files/ directory
 COPY files/apache2/000-default.conf /etc/apache2/sites-available/000-default.conf
@@ -28,6 +32,9 @@ COPY files/mariadb/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 # copy the supervisor configuration file
 COPY files/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 
+# copy the configuration file for wordpress from files/ directory
+COPY files/wp-config.php /var/www/html/wp-config.php
+
 # create mysql socket directory
 RUN mkdir /var/run/mysqld && chown mysql:mysql /var/run/mysqld
 
@@ -35,4 +42,4 @@ RUN mkdir /var/run/mysqld && chown mysql:mysql /var/run/mysqld
 EXPOSE 80
 
 # start supervisor
-CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
