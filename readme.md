@@ -20,16 +20,17 @@ FROM debian:latest
 # install apache2, php, mod_php for apache2, php-mysql and mariadb
 RUN apt-get update && \
     apt-get install -y apache2 php libapache2-mod-php php-mysql mariadb-server && \
-    apt-get clean```
+    apt-get clean \
+```
 
 Построим образ контейнера с именем apache2-php-mariadb.
-```dockerfile 
-build -t apache2-hp-mariadb . 
+```bash
+docker build -t apache2-php-mariadb . 
 ```
 Построим образ и на его основе создаем контейнер apache2-php-mariadb из образа apache2-php-mariadb и запускаем его в фоновом режиме с командой запуска bash.
 
 ```dockerfile
-run -d --name apache2-php-mariadb -it apache2-php-mariadb bash
+docker run -d --name apache2-php-mariadb -it apache2-php-mariadb bash
 ```
 
 Копируем из контейнера файлы конфигурации apache2, php, mariadb в папку files/ на компьютере. Для этого, в контексте проекта, выполняем команды:
